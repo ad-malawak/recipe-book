@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#EEE5DC" />
+<title>Your OATOLOGY Recipes</title>
+
+<style>
+  @font-face {
+    font-family: "Museo Sans Rounded";
+    src: url("assets/fonts/MuseoSansRounded500.otf") format("opentype");
+    font-weight: 500;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Museo Sans Rounded";
+    src: url("assets/fonts/MuseoSansRounded700.otf") format("opentype");
+    font-weight: 700;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Museo Sans Rounded";
+    src: url("assets/fonts/MuseoSansRounded900.otf") format("opentype");
+    font-weight: 900;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Museo Sans Rounded";
+    src: url("assets/fonts/MuseoSansRounded1000.otf") format("opentype");
+    font-weight: 1000;
+    font-display: swap;
+  }
+
+  :root {
+    --blueberry: #005363;
+    --blueberry-deep: #003842;
+    --spirulina: #00A390;
+    --oatmeal: #EEE5DC;
+    --oatmeal-light: #FAF5EC;
+    --sky: #C4E7E9;
+    --berry: #F26F67;
+    --berry-soft: #F8A49E;
+    --ink: #1a2a2e;
+    --muted: #5a6e72;
+    --shadow: 0 10px 28px rgba(0, 83, 99, 0.12);
+    --shadow-lg: 0 20px 48px rgba(0, 83, 99, 0.22);
+    --radius: 22px;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  html {
+    background: var(--oatmeal);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    font-family: "Museo Sans Rounded", "Nunito", system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--oatmeal);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+  }
+  body.modal-open {
+    position: fixed;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  img { display: block; max-width: 100%; }
+
+  .page {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 24px 18px 80px;
+    position: relative;
+  }
+
+  .bg-bubbles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bg-bubbles span {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.32;
+  }
+  .bg-bubbles span:nth-child(1) { width: 180px; height: 180px; background: var(--sky); top: -60px; right: -50px; }
+  .bg-bubbles span:nth-child(2) { width: 90px; height: 90px; background: var(--berry-soft); top: 42%; left: -30px; opacity: 0.22; }
+  .bg-bubbles span:nth-child(3) { width: 140px; height: 140px; background: var(--spirulina); bottom: -40px; right: -40px; opacity: 0.15; }
+
+  .page > * { position: relative; z-index: 1; }
+
+  header {
+    text-align: center;
+    padding: 8px 0 22px;
+  }
+  .logo {
+    height: 62px;
+    width: auto;
+    display: inline-block;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: "Museo Sans Rounded", sans-serif;
+    font-weight: 1000;
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    color: var(--blueberry);
+  }
+  .sub {
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+    max-width: 320px;
+    margin-inline: auto;
+    line-height: 1.4;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 24px;
+  }
+  @media (min-width: 420px) {
+    .grid { gap: 16px; }
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    padding: 0;
+    font-family: inherit;
+    color: inherit;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .card:active { transform: scale(0.975); }
+  @media (hover: hover) {
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .card:hover .tile img { transform: scale(1.05); }
+  }
+
+  .card .tile {
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    background: var(--oatmeal);
+  }
+  .card .tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 420ms ease;
+  }
+  .card .badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--blueberry);
+    font-size: 10px;
+    font-weight: 1000;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+  }
+  .card .label {
+    padding: 12px 12px 14px;
+  }
+  .card .name {
+    font-weight: 1000;
+    font-size: 15px;
+    line-height: 1.15;
+    color: var(--blueberry);
+    margin: 0 0 4px;
+    letter-spacing: -0.005em;
+  }
+  .card .teaser {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  footer .heart {
+    display: inline-block;
+    color: var(--berry);
+    font-weight: 1000;
+  }
+
+  /* modal */
+  .modal-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 56, 66, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+    z-index: 50;
+  }
+  .modal-scrim.open { opacity: 1; pointer-events: auto; }
+
+  .modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-width: 560px;
+    margin: 0 auto;
+    height: 94dvh;
+    background: var(--oatmeal-light);
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -20px 60px rgba(0, 56, 66, 0.28);
+    transform: translateY(100%);
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal.open { transform: translateY(0); }
+
+  .modal-hero {
+    position: relative;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border-radius: 28px 28px 0 0;
+  }
+  .modal-hero-media {
+    position: relative;
+    aspect-ratio: 16 / 11;
+    background: var(--blueberry);
+    overflow: hidden;
+  }
+  .modal-hero-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 260ms ease;
+  }
+  .modal-hero-media img.swap {
+    opacity: 0;
+  }
+  .modal-hero-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0, 56, 66, 0.05) 0%, rgba(0, 56, 66, 0) 35%, rgba(0, 56, 66, 0.78) 100%);
+    pointer-events: none;
+  }
+  .modal-hero .handle {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 4px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 3px;
+    z-index: 3;
+  }
+  .close-btn {
+    position: absolute;
+    top: max(14px, env(safe-area-inset-top));
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    border: none;
+    color: var(--blueberry);
+    font-size: 24px;
+    font-weight: 1000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: transform 160ms ease, background 160ms ease;
+    z-index: 4;
+    box-shadow: 0 4px 14px rgba(0, 56, 66, 0.25);
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .close-btn:hover { background: #fff; }
+  .close-btn:active { transform: scale(0.94); }
+
+  .modal-hero-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 16px 22px 20px;
+    color: #fff;
+    z-index: 2;
+  }
+  .modal-hero-text .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 900;
+    opacity: 0.9;
+    margin: 0 0 6px;
+  }
+  .modal-hero-text h2 {
+    font-weight: 1000;
+    font-size: 26px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+    max-width: 86%;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .chip b { font-weight: 1000; }
+
+  .gallery {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 8px;
+    padding: 12px 22px 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 22px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .gallery::-webkit-scrollbar { display: none; }
+  .thumb {
+    flex: 0 0 64px;
+    height: 64px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    padding: 0;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 160ms ease, transform 160ms ease;
+    touch-action: manipulation;
+    scroll-snap-align: start;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .thumb.active { border-color: var(--berry); }
+  .thumb:active { transform: scale(0.94); }
+
+  .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 14px 22px max(32px, calc(env(safe-area-inset-bottom) + 24px));
+  }
+
+  .section-title {
+    font-weight: 1000;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--blueberry);
+    margin: 0 0 10px;
+  }
+  .section + .section { margin-top: 22px; }
+
+  ul.ingredients {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  ul.ingredients li {
+    position: relative;
+    padding: 10px 0 10px 28px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.35;
+    border-bottom: 1px solid rgba(0, 83, 99, 0.08);
+  }
+  ul.ingredients li:last-child { border-bottom: none; }
+  ul.ingredients li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 16px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--berry);
+  }
+  ul.ingredients li.group-title {
+    padding-left: 0;
+    font-weight: 1000;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: none;
+    padding-top: 14px;
+    padding-bottom: 4px;
+  }
+  ul.ingredients li.group-title::before { display: none; }
+
+  ol.method {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step;
+  }
+  ol.method li {
+    counter-increment: step;
+    position: relative;
+    padding: 4px 0 14px 42px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  ol.method li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--blueberry);
+    color: #fff;
+    font-weight: 1000;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Museo Sans Rounded", sans-serif;
+  }
+
+  .tip {
+    margin-top: 22px;
+    padding: 14px 16px;
+    background: var(--sky);
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--blueberry-deep);
+    line-height: 1.4;
+  }
+  .tip b {
+    font-weight: 1000;
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  @media (max-height: 700px) {
+    .modal-hero-media { aspect-ratio: 5 / 3; }
+    .modal-hero-text h2 { font-size: 22px; margin-bottom: 8px; }
+    .gallery { padding: 10px 22px 2px; }
+    .thumb { flex-basis: 56px; height: 56px; }
+  }
+
+  @media (min-width: 560px) {
+    .modal {
+      height: 88dvh;
+      max-height: 820px;
+      border-radius: 28px 28px 0 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-bubbles" aria-hidden="true">
+  <span></span><span></span><span></span>
+</div>
+
+<main class="page">
+
+  <header>
+    <img class="logo" src="assets/logo/OATOLOGY-Logo-Transparent-Blueberry.png" alt="OATOLOGY" />
+    <h1>Your Recipes</h1>
+    <p class="sub">Six overnight oats, one jar. Tap a recipe to get started.</p>
+  </header>
+
+  <section class="grid" id="grid" aria-label="Recipe cards"></section>
+
+  <footer>
+    Made with <span class="heart">&#9829;</span> by OATOLOGY
+  </footer>
+
+</main>
+
+<div class="modal-scrim" id="scrim"></div>
+<aside class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-hero">
+    <div class="modal-hero-media">
+      <img id="heroImg" src="" alt="" />
+      <div class="modal-hero-scrim"></div>
+      <div class="handle" aria-hidden="true"></div>
+      <button class="close-btn" id="closeBtn" aria-label="Close recipe">&times;</button>
+      <div class="modal-hero-text">
+        <p class="eyebrow">Overnight Oats</p>
+        <h2 id="modal-title">Recipe name</h2>
+        <div class="meta" id="modalMeta"></div>
+      </div>
+    </div>
+  </div>
+  <div class="gallery" id="gallery" aria-label="Recipe photos"></div>
+  <div class="modal-body" id="modalBody"></div>
+</aside>
+
+<script>
+  const IMG_PATH = "images/optimised/";
+
+  const RECIPES = [
+    {
+      id: "peanut-banana",
+      name: "Peanut Butter & Banana",
+      teaser: "Creamy, nutty, a forever favourite.",
+      imageCount: 4,
+      prep: "10 min",
+      difficulty: "Easy",
+      ingredients: [
+        "50g rolled oats (one lid)",
+        "150ml milk of choice (to the milk line)",
+        "1 tbsp chia seeds",
+        "1 medium banana",
+        "1 tbsp peanut butter",
+        "\u00BD tsp vanilla extract",
+        "\u00BD tsp ground cinnamon",
+        "Chopped nuts, for topping"
+      ],
+      method: [
+        "Add 150ml milk to the milk line on your jar.",
+        "Measure and add one portion of oats (50g) using the lid.",
+        "Mix in the chia seeds, vanilla extract and ground cinnamon.",
+        "Mash \u2154 of the banana in a separate bowl, then stir it into the oats with the peanut butter until combined.",
+        "Cover and refrigerate overnight.",
+        "When ready to serve, slice the remaining banana and place on top, adding a sprinkle of chopped nuts to taste."
+      ]
+    },
+    {
+      id: "blueberry-lemon",
+      name: "Blueberry & Lemon",
+      teaser: "Zesty, fresh, wake-up bright.",
+      imageCount: 3,
+      prep: "10 min",
+      difficulty: "Easy",
+      ingredients: [
+        "50g rolled oats (one lid)",
+        "150ml milk of choice (to the milk line)",
+        "1 tbsp chia seeds",
+        "1 tbsp Greek yoghurt",
+        "1\u20132 tbsp honey or maple syrup, to taste",
+        "\u00BD tsp vanilla extract",
+        "1 tsp lemon zest",
+        "A pinch of salt",
+        "A handful of fresh or frozen blueberries"
+      ],
+      method: [
+        "Add 150ml milk to the milk line on your jar.",
+        "Measure and add one portion of oats (50g) using the lid.",
+        "Add the remaining ingredients to your jar, reserving a few blueberries for topping.",
+        "Stir well until fully combined.",
+        "Cover and refrigerate overnight.",
+        "Top with the reserved blueberries and a little extra lemon zest before serving."
+      ]
+    },
+    {
+      id: "choc-raspberry",
+      name: "Chocolate & Raspberry",
+      teaser: "Rich, chocolatey, fruit-kissed.",
+      imageCount: 3,
+      prep: "5 min",
+      difficulty: "Easy",
+      ingredients: [
+        "50g rolled oats (one lid)",
+        "150ml milk of choice (to the milk line)",
+        "1 tbsp chia seeds",
+        "1 tbsp Greek yoghurt",
+        "1 tbsp raw cacao or unsweetened cocoa powder",
+        "1 tbsp honey or maple syrup, to taste",
+        "A pinch of sea salt",
+        "A handful of fresh or frozen raspberries",
+        "Dark mini chocolate chips or chopped dark sugar-free chocolate, for topping"
+      ],
+      method: [
+        "Add 150ml milk to the milk line on your jar.",
+        "Measure and add one portion of oats (50g) using the lid.",
+        "Add all remaining ingredients, except the raspberries and chocolate chips.",
+        "Stir thoroughly until well combined.",
+        "Cover and refrigerate overnight.",
+        "Top with fresh raspberries and the chocolate chips before serving."
+      ]
+    },
+    {
+      id: "strawberry-cheesecake",
+      name: "Strawberry Cheesecake",
+      teaser: "Indulgent, smooth, pudding for breakfast.",
+      imageCount: 4,
+      prep: "10 min",
+      difficulty: "Easy",
+      ingredients: [
+        "50g rolled oats (one lid)",
+        "150ml milk of choice (to the milk line)",
+        "1 tbsp cream cheese",
+        "\u00BD tsp vanilla extract",
+        "1 tbsp honey or maple syrup, to taste",
+        "A pinch of sea salt",
+        "6\u20138 fresh strawberries, to taste",
+        "1 tbsp chia seeds (optional)",
+        "Crushed biscuit, for topping (optional)"
+      ],
+      method: [
+        "In the bottom of your jar, mash half of the strawberries with half of the honey or maple syrup.",
+        "Add the remaining ingredients, reserving the rest of the strawberries and the crushed biscuit for topping.",
+        "Stir well until fully combined.",
+        "Cover and refrigerate overnight.",
+        "Top with the reserved strawberries and crushed biscuit to taste."
+      ]
+    },
+    {
+      id: "apple-pie",
+      name: "Apple Pie",
+      teaser: "Warm spice, stewed apple, cosy.",
+      imageCount: 4,
+      prep: "15 min",
+      difficulty: "More effort",
+      ingredients: [
+        { group: "For the stewed apples" },
+        "\u00BD medium red apple, sliced",
+        "\u00BD tbsp honey or maple syrup",
+        "1 tbsp water",
+        "\u00BD tsp ground cinnamon",
+        "A pinch of salt",
+        { group: "For the oats" },
+        "50g rolled oats (one lid)",
+        "150ml milk of choice (to the milk line)",
+        "1 tbsp chia seeds",
+        "1 tbsp Greek yoghurt",
+        "A pinch each of ground ginger, cardamom and salt (optional)"
+      ],
+      method: [
+        "Heat a small saut\u00E9 pan over medium-low heat. Add the sliced apples, honey or maple syrup, cinnamon and a pinch of salt.",
+        "Cook for about 5 minutes, stirring occasionally, until the apples soften. Remove from heat and let cool slightly.",
+        "In your jar, add the rolled oats, chia seeds and spices (if using). Stir well to combine. Pour in the milk and Greek yoghurt.",
+        "Place half of the stewed apples into the bottom of the jar. Then add the oat mixture as the middle layer.",
+        "Top with the remaining stewed apples.",
+        "Cover and refrigerate overnight.",
+        "Top with extra stewed apples before serving, if desired."
+      ]
+    },
+    {
+      id: "blended-berry",
+      name: "Blended Berry",
+      teaser: "Smooth, vibrant, berry-forward.",
+      imageCount: 4,
+      prep: "10 min",
+      difficulty: "Easy",
+      ingredients: [
+        "50g rolled oats (one lid)",
+        "150ml milk of choice (to the milk line)",
+        "1 tbsp chia seeds (optional)",
+        "1 tbsp Greek yoghurt",
+        "1\u20132 tbsp honey or maple syrup, to taste",
+        "A pinch of salt",
+        "Frozen blueberries, strawberries or raspberries (or a mix)",
+        "Fresh blueberries, for topping"
+      ],
+      method: [
+        "Add the rolled oats, milk, Greek yoghurt, chia seeds (if using), honey or maple syrup, salt and a generous handful of berries to a blender.",
+        "Blend on high until smooth and creamy, with a consistency similar to thick batter.",
+        "Add a few fresh or frozen blueberries to the bottom of your jar.",
+        "Pour the blended oat mixture over the blueberries and gently smooth the top.",
+        "Cover and refrigerate overnight.",
+        "Top with fresh blueberries."
+      ]
+    }
+  ];
+
+  const TIPS = {
+    "peanut-banana": "Use the measuring lid for oats and the milk line on the jar. No scales needed.",
+    "blueberry-lemon": "Frozen blueberries work brilliantly. They thaw overnight and release extra flavour.",
+    "choc-raspberry": "Pick a cacao you love. It does most of the heavy lifting in this one.",
+    "strawberry-cheesecake": "Let the strawberries sit with the honey for a few minutes before mashing. More flavour.",
+    "apple-pie": "Stew the apples the night before so breakfast is grab-and-go in the morning.",
+    "blended-berry": "Straight from the blender into your jar. Saves on washing up."
+  };
+
+  RECIPES.forEach(r => {
+    r.images = [];
+    for (let i = 1; i <= r.imageCount; i++) {
+      r.images.push(IMG_PATH + r.id + "-" + i + ".webp");
+    }
+  });
+
+  const grid = document.getElementById("grid");
+  const modal = document.getElementById("modal");
+  const scrim = document.getElementById("scrim");
+  const heroImg = document.getElementById("heroImg");
+  const gallery = document.getElementById("gallery");
+  const modalBody = document.getElementById("modalBody");
+  const modalMeta = document.getElementById("modalMeta");
+  const modalTitle = document.getElementById("modal-title");
+  const closeBtn = document.getElementById("closeBtn");
+
+  RECIPES.forEach((r, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "card";
+    btn.setAttribute("aria-label", r.name + " recipe");
+    btn.dataset.id = r.id;
+    const eager = idx < 4 ? 'eager' : 'lazy';
+    btn.innerHTML = `
+      <div class="tile">
+        <img src="${r.images[0]}" alt="${r.name}" loading="${eager}" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">${r.name}</p>
+        <p class="teaser">${r.teaser}</p>
+      </div>
+    `;
+    btn.addEventListener("click", () => openRecipe(r.id));
+    grid.appendChild(btn);
+  });
+
+  function swapHeroImage(src) {
+    heroImg.classList.add("swap");
+    const pre = new Image();
+    pre.onload = () => {
+      heroImg.src = src;
+      requestAnimationFrame(() => heroImg.classList.remove("swap"));
+    };
+    pre.src = src;
+  }
+
+  let savedScrollY = 0;
+  let triggerEl = null;
+
+  function lockBodyScroll() {
+    savedScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.top = `-${savedScrollY}px`;
+    document.body.classList.add("modal-open");
+  }
+
+  function unlockBodyScroll() {
+    document.body.classList.remove("modal-open");
+    document.body.style.top = "";
+    window.scrollTo(0, savedScrollY);
+  }
+
+  function openRecipe(id) {
+    const r = RECIPES.find(x => x.id === id);
+    if (!r) return;
+
+    triggerEl = document.activeElement;
+    modalTitle.textContent = r.name;
+
+    heroImg.classList.remove("swap");
+    heroImg.src = r.images[0];
+    heroImg.alt = r.name;
+
+    modalMeta.innerHTML = `
+      <span class="chip"><b>Prep</b> ${r.prep}</span>
+      <span class="chip"><b>Difficulty</b> ${r.difficulty}</span>
+      <span class="chip"><b>Serves</b> 1</span>
+    `;
+
+    gallery.innerHTML = r.images.map((src, i) => `
+      <button class="thumb ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Photo ${i + 1}">
+        <img src="${src}" alt="" loading="lazy" decoding="async" />
+      </button>
+    `).join("");
+
+    gallery.querySelectorAll(".thumb").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = parseInt(btn.dataset.index, 10);
+        gallery.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
+        btn.classList.add("active");
+        swapHeroImage(r.images[i]);
+      });
+    });
+
+    const ingredientsHtml = r.ingredients.map(item => {
+      if (typeof item === "object" && item.group) {
+        return `<li class="group-title">${item.group}</li>`;
+      }
+      return `<li>${item}</li>`;
+    }).join("");
+
+    const methodHtml = r.method.map(step => `<li>${step}</li>`).join("");
+    const tip = TIPS[r.id];
+
+    modalBody.innerHTML = `
+      <div class="section">
+        <p class="section-title">Ingredients</p>
+        <ul class="ingredients">${ingredientsHtml}</ul>
+      </div>
+      <div class="section">
+        <p class="section-title">Method</p>
+        <ol class="method">${methodHtml}</ol>
+      </div>
+      ${tip ? `<div class="tip"><b>Tip</b>${tip}</div>` : ""}
+    `;
+    modalBody.scrollTop = 0;
+    gallery.scrollLeft = 0;
+
+    requestAnimationFrame(() => {
+      lockBodyScroll();
+      modal.classList.add("open");
+      scrim.classList.add("open");
+      closeBtn.focus({ preventScroll: true });
+    });
+  }
+
+  function closeRecipe() {
+    modal.classList.remove("open");
+    scrim.classList.remove("open");
+    unlockBodyScroll();
+    if (triggerEl && typeof triggerEl.focus === "function") {
+      triggerEl.focus({ preventScroll: true });
+    }
+  }
+
+  closeBtn.addEventListener("click", closeRecipe);
+  scrim.addEventListener("click", closeRecipe);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeRecipe();
+  });
+</script>
+
+</body>
+</html>
