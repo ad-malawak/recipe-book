@@ -332,10 +332,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .welcome { animation: none; }
-    .welcome-icon { animation: none; }
+    /* Only disable the continuous confetti drift for users with motion sensitivity.
+       Entrance, icon pulse, and prize shine are subtle enough to keep on. */
     .welcome-confetti span { animation: none !important; }
-    .welcome-prize { animation: none; }
   }
 
   .grid {
@@ -975,7 +974,7 @@
         </svg>
       </div>
       <p class="welcome-eyebrow">Prize draw</p>
-      <p class="welcome-headline">You're entered to win!</p>
+      <p class="welcome-headline" id="welcomeHeadline">You're entered to win!</p>
       <p class="welcome-prize" id="welcomePrize">&pound;50</p>
       <p class="welcome-caption" id="welcomeCaption">towards a year's supply of oats</p>
       <p class="welcome-note">Winner drawn monthly</p>
@@ -1057,13 +1056,33 @@
       ca: { amount: "$65 CAD",         caption: "towards a year's supply of oats" }
     };
 
+    function mapPurchaseSource(value) {
+      if (!value) return null;
+      const v = value.toLowerCase().trim();
+      if (v === "amazon uk" || v.includes("united kingdom")) return "uk";
+      if (v === "amazon us" || v.includes("united states") || v.includes("usa")) return "us";
+      if (v === "amazon canada" || v.includes("canada")) return "ca";
+      return null;
+    }
+
     function getCountry() {
       try {
         const params = new URLSearchParams(window.location.search);
-        const c = (params.get("country") || "").toLowerCase().trim();
-        if (Object.prototype.hasOwnProperty.call(PRIZES, c)) return c;
+        const direct = (params.get("country") || "").toLowerCase().trim();
+        if (Object.prototype.hasOwnProperty.call(PRIZES, direct)) return direct;
+        const fromMapped = mapPurchaseSource(params.get("from"));
+        if (fromMapped) return fromMapped;
       } catch (e) {}
       return "uk";
+    }
+
+    function getFirstName() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const raw = (params.get("name") || "").trim();
+        const clean = raw.replace(/[<>"'`]/g, "").substring(0, 24);
+        return clean || null;
+      } catch (e) { return null; }
     }
 
     function isDismissed() {
@@ -1076,6 +1095,7 @@
     }
 
     const welcome = document.getElementById("welcome");
+    const welcomeHeadline = document.getElementById("welcomeHeadline");
     const welcomePrize = document.getElementById("welcomePrize");
     const welcomeCaption = document.getElementById("welcomeCaption");
     const welcomeDismiss = document.getElementById("welcomeDismiss");
@@ -1089,6 +1109,11 @@
     const prize = PRIZES[getCountry()];
     welcomePrize.textContent = prize.amount;
     welcomeCaption.textContent = prize.caption;
+
+    const firstName = getFirstName();
+    if (firstName && welcomeHeadline) {
+      welcomeHeadline.textContent = `${firstName}, you're entered to win!`;
+    }
 
     welcomeDismiss.addEventListener("click", () => {
       welcome.classList.add("dismissed");
