@@ -1094,12 +1094,27 @@
       try { sessionStorage.setItem(SESSION_KEY, "1"); } catch (e) {}
     }
 
+    function hasEntryParams() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        return params.has("from") || params.has("name") || params.has("country");
+      } catch (e) {
+        return false;
+      }
+    }
+
     const welcome = document.getElementById("welcome");
     const welcomeHeadline = document.getElementById("welcomeHeadline");
     const welcomePrize = document.getElementById("welcomePrize");
     const welcomeCaption = document.getElementById("welcomeCaption");
     const welcomeDismiss = document.getElementById("welcomeDismiss");
     if (!welcome) return;
+
+    // Only show the prize draw banner when arriving from Tally (params present)
+    if (!hasEntryParams()) {
+      welcome.style.display = "none";
+      return;
+    }
 
     if (isDismissed()) {
       welcome.style.display = "none";
