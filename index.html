@@ -467,7 +467,8 @@
     align-items: center;
     gap: 14px;
   }
-  .share-btn {
+  .share-btn,
+  .download-btn {
     display: inline-flex;
     align-items: center;
     gap: 9px;
@@ -487,14 +488,17 @@
     -webkit-appearance: none;
     appearance: none;
   }
-  .share-btn svg {
+  .share-btn svg,
+  .download-btn svg {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
   }
-  .share-btn:active { transform: scale(0.96); }
+  .share-btn:active,
+  .download-btn:active { transform: scale(0.96); }
   @media (hover: hover) {
-    .share-btn:hover {
+    .share-btn:hover,
+    .download-btn:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-lg);
     }
@@ -995,6 +999,14 @@
   </section>
 
   <footer>
+    <button class="download-btn" id="downloadBtn" type="button" aria-label="Download recipes as a PDF">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      <span>Download recipes</span>
+    </button>
     <button class="share-btn" id="shareBtn" type="button" aria-label="Share these recipes">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/>
@@ -1047,43 +1059,45 @@
 </aside>
 
 <script>
+  // shared helpers — used by welcome banner + download button
+  const PRIZES = {
+    uk: { amount: "£50",       caption: "towards a year's supply of oats" },
+    us: { amount: "$65",             caption: "towards a year's supply of oats" },
+    ca: { amount: "$65 CAD",         caption: "towards a year's supply of oats" }
+  };
+
+  function mapPurchaseSource(value) {
+    if (!value) return null;
+    const v = value.toLowerCase().trim();
+    if (v === "amazon uk" || v.includes("united kingdom")) return "uk";
+    if (v === "amazon us" || v.includes("united states") || v.includes("usa")) return "us";
+    if (v === "amazon canada" || v.includes("canada")) return "ca";
+    return null;
+  }
+
+  function getCountry() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const direct = (params.get("country") || "").toLowerCase().trim();
+      if (Object.prototype.hasOwnProperty.call(PRIZES, direct)) return direct;
+      const fromMapped = mapPurchaseSource(params.get("from"));
+      if (fromMapped) return fromMapped;
+    } catch (e) {}
+    return "uk";
+  }
+
+  function getFirstName() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const raw = (params.get("name") || "").trim();
+      const clean = raw.replace(/[<>"'`]/g, "").substring(0, 24);
+      return clean || null;
+    } catch (e) { return null; }
+  }
+
   // welcome banner: prize draw + dismiss
   (function initWelcome() {
     const SESSION_KEY = "oatology_welcome_dismissed";
-    const PRIZES = {
-      uk: { amount: "£50",       caption: "towards a year's supply of oats" },
-      us: { amount: "$65",             caption: "towards a year's supply of oats" },
-      ca: { amount: "$65 CAD",         caption: "towards a year's supply of oats" }
-    };
-
-    function mapPurchaseSource(value) {
-      if (!value) return null;
-      const v = value.toLowerCase().trim();
-      if (v === "amazon uk" || v.includes("united kingdom")) return "uk";
-      if (v === "amazon us" || v.includes("united states") || v.includes("usa")) return "us";
-      if (v === "amazon canada" || v.includes("canada")) return "ca";
-      return null;
-    }
-
-    function getCountry() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const direct = (params.get("country") || "").toLowerCase().trim();
-        if (Object.prototype.hasOwnProperty.call(PRIZES, direct)) return direct;
-        const fromMapped = mapPurchaseSource(params.get("from"));
-        if (fromMapped) return fromMapped;
-      } catch (e) {}
-      return "uk";
-    }
-
-    function getFirstName() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const raw = (params.get("name") || "").trim();
-        const clean = raw.replace(/[<>"'`]/g, "").substring(0, 24);
-        return clean || null;
-      } catch (e) { return null; }
-    }
 
     function isDismissed() {
       try { return sessionStorage.getItem(SESSION_KEY) === "1"; }
@@ -1529,6 +1543,25 @@
     }
 
     showToast("Sharing not supported");
+  });
+
+  // download recipes (country-aware PDF — UK / US / CA)
+  const downloadBtn = document.getElementById("downloadBtn");
+  downloadBtn.addEventListener("click", () => {
+    const country = getCountry(); // "uk" | "us" | "ca" (defaults to "uk")
+    const code = country.toUpperCase();
+    const filename = `OATOLOGY Recipe Book 2026 (${code}).pdf`;
+    const pdfPath = "assets/pdfs/" + encodeURIComponent(filename);
+
+    const a = document.createElement("a");
+    a.href = pdfPath;
+    a.download = filename;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    showToast("Recipe book downloading…");
   });
 </script>
 
