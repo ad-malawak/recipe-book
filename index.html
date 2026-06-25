@@ -776,6 +776,50 @@
   .hero-audio-toggle.unmuted .icon-on { display: block; }
   .hero-audio-toggle.unmuted .icon-off { display: none; }
 
+  /* centred play overlay — shown when video is paused (e.g. autoplay blocked on iOS private) */
+  .hero-play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 56, 66, 0.18);
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    z-index: 3;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease, background 220ms ease;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .hero-play-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .hero-play-overlay:hover { background: rgba(0, 56, 66, 0.28); }
+  .hero-play-overlay-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    transition: transform 160ms ease;
+  }
+  .hero-play-overlay:active .hero-play-overlay-icon { transform: scale(0.92); }
+  .hero-play-overlay-icon svg {
+    width: 28px;
+    height: 28px;
+    fill: var(--blueberry);
+    margin-left: 4px; /* optical centre — play triangle reads right-shifted */
+  }
+
   .modal-hero-text {
     position: absolute;
     left: 0;
@@ -1105,6 +1149,11 @@
       </div>
       <div class="modal-hero-scrim"></div>
       <div class="handle" aria-hidden="true"></div>
+      <button class="hero-play-overlay" id="heroPlayOverlay" type="button" aria-label="Play video">
+        <span class="hero-play-overlay-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,4 20,12 6,20"/></svg>
+        </span>
+      </button>
       <button class="hero-audio-toggle" id="heroAudioToggle" type="button" aria-label="Unmute video" hidden>
         <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/>
@@ -1517,6 +1566,7 @@
   const modalScroll = document.getElementById("modalScroll");
   const heroMedia = document.getElementById("heroMedia");
   const heroAudioToggle = document.getElementById("heroAudioToggle");
+  const heroPlayOverlay = document.getElementById("heroPlayOverlay");
   const gallery = document.getElementById("gallery");
   const modalBody = document.getElementById("modalBody");
   const modalMeta = document.getElementById("modalMeta");
@@ -1556,6 +1606,7 @@
     heroAudioToggle.hidden = true;
     heroAudioToggle.classList.remove("unmuted");
     heroAudioToggle.setAttribute("aria-label", "Unmute video");
+    heroPlayOverlay.classList.remove("show");
   }
 
   function renderHero(item, opts) {
@@ -1578,8 +1629,19 @@
       heroMedia.appendChild(v);
       currentVideoEl = v;
       heroAudioToggle.hidden = false;
+      // Sync the centred play overlay with the video's play/pause state
+      v.addEventListener("play", () => heroPlayOverlay.classList.remove("show"));
+      v.addEventListener("pause", () => {
+        // Only show the overlay if the video is still in the hero (not torn down)
+        if (currentVideoEl === v) heroPlayOverlay.classList.add("show");
+      });
+      // Show overlay by default until autoplay actually starts
+      heroPlayOverlay.classList.add("show");
       if (autoplay && !prefersReducedMotion()) {
-        v.play().catch(() => { /* autoplay blocked — poster stays; mute-toggle gesture will play */ });
+        v.play().catch(() => {
+          // Autoplay blocked (iOS Private mode, Low Power Mode, etc.) — overlay stays visible
+          // User taps the overlay to play.
+        });
       }
     } else {
       const img = document.createElement("img");
@@ -1587,8 +1649,15 @@
       img.alt = "";
       img.decoding = "async";
       heroMedia.appendChild(img);
+      heroPlayOverlay.classList.remove("show");
     }
   }
+
+  // Tap the play overlay to start the video (user gesture — works around autoplay blocks)
+  heroPlayOverlay.addEventListener("click", () => {
+    if (!currentVideoEl) return;
+    currentVideoEl.play().catch(() => {});
+  });
 
   // Backwards-compat wrapper for any caller that still passes a photo URL directly
   function swapHeroImage(src) {
