@@ -661,15 +661,23 @@
     transform: translateY(100%);
     transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
     z-index: 60;
-    display: flex;
-    flex-direction: column;
+    display: block;
     overflow: hidden;
   }
   .modal.open { transform: translateY(0); }
 
+  /* single scrollable wrapper — hero, gallery, body all scroll together */
+  .modal-scroll {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 24px));
+  }
+
   .modal-hero {
     position: relative;
-    flex: 0 0 auto;
     overflow: hidden;
     border-radius: 28px 28px 0 0;
   }
@@ -679,17 +687,17 @@
     background: var(--blueberry);
     overflow: hidden;
   }
-  .modal-hero-media img {
+  .modal-hero-media img,
+  .modal-hero-media video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: opacity 260ms ease;
+    display: block;
   }
-  .modal-hero-media img.swap {
-    opacity: 0;
-  }
+  .modal-hero-media .swap { opacity: 0; }
   .modal-hero-scrim {
     position: absolute;
     inset: 0;
@@ -707,10 +715,12 @@
     background: rgba(255,255,255,0.7);
     border-radius: 3px;
     z-index: 3;
+    pointer-events: none;
   }
-  .close-btn {
+  /* close button is now a sibling of the scroller — stays visible at every scroll position */
+  .modal-close {
     position: absolute;
-    top: max(14px, env(safe-area-inset-top));
+    top: max(14px, calc(env(safe-area-inset-top) + 4px));
     right: 14px;
     width: 44px;
     height: 44px;
@@ -726,14 +736,45 @@
     justify-content: center;
     line-height: 1;
     transition: transform 160ms ease, background 160ms ease;
-    z-index: 4;
+    z-index: 5;
     box-shadow: 0 4px 14px rgba(0, 56, 66, 0.25);
     touch-action: manipulation;
     -webkit-appearance: none;
     appearance: none;
   }
-  .close-btn:hover { background: #fff; }
-  .close-btn:active { transform: scale(0.94); }
+  .modal-close:hover { background: #fff; }
+  .modal-close:active { transform: scale(0.94); }
+
+  /* unmute/mute toggle, only visible when a video is in the hero */
+  .hero-audio-toggle {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(0, 56, 66, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: transform 160ms ease, background 160ms ease;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .hero-audio-toggle[hidden] { display: none; }
+  .hero-audio-toggle:hover { background: rgba(0, 56, 66, 0.75); }
+  .hero-audio-toggle:active { transform: scale(0.92); }
+  .hero-audio-toggle svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .hero-audio-toggle .icon-on { display: none; }
+  .hero-audio-toggle.unmuted .icon-on { display: block; }
+  .hero-audio-toggle.unmuted .icon-off { display: none; }
 
   .modal-hero-text {
     position: absolute;
@@ -783,7 +824,6 @@
   .chip b { font-weight: 1000; }
 
   .gallery {
-    flex: 0 0 auto;
     display: flex;
     gap: 8px;
     padding: 12px 22px 4px;
@@ -797,6 +837,7 @@
   }
   .gallery::-webkit-scrollbar { display: none; }
   .thumb {
+    position: relative;
     flex: 0 0 64px;
     height: 64px;
     border-radius: 12px;
@@ -815,16 +856,31 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
   .thumb.active { border-color: var(--berry); }
   .thumb:active { transform: scale(0.94); }
+  .thumb.video-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 56, 66, 0.32);
+    pointer-events: none;
+  }
+  .thumb .play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  }
 
   .modal-body {
-    flex: 1 1 auto;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    padding: 14px 22px max(32px, calc(env(safe-area-inset-bottom) + 24px));
+    padding: 14px 22px 0;
   }
 
   .section-title {
@@ -1041,21 +1097,34 @@
 
 <div class="modal-scrim" id="scrim"></div>
 <aside class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <div class="modal-hero">
-    <div class="modal-hero-media">
-      <img id="heroImg" src="" alt="" />
+  <button class="modal-close" id="closeBtn" type="button" aria-label="Close recipe">&times;</button>
+  <div class="modal-scroll" id="modalScroll">
+    <div class="modal-hero">
+      <div class="modal-hero-media" id="heroMedia">
+        <!-- JS injects <img> or <video> here at openRecipe() time -->
+      </div>
       <div class="modal-hero-scrim"></div>
       <div class="handle" aria-hidden="true"></div>
-      <button class="close-btn" id="closeBtn" aria-label="Close recipe">&times;</button>
+      <button class="hero-audio-toggle" id="heroAudioToggle" type="button" aria-label="Unmute video" hidden>
+        <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/>
+          <line x1="23" y1="9" x2="17" y2="15"/>
+          <line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+        <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+      </button>
       <div class="modal-hero-text">
         <p class="eyebrow">Overnight Oats</p>
         <h2 id="modal-title">Recipe name</h2>
         <div class="meta" id="modalMeta"></div>
       </div>
     </div>
+    <div class="gallery" id="gallery" aria-label="Recipe photos and video"></div>
+    <div class="modal-body" id="modalBody"></div>
   </div>
-  <div class="gallery" id="gallery" aria-label="Recipe photos"></div>
-  <div class="modal-body" id="modalBody"></div>
 </aside>
 
 <script>
@@ -1154,6 +1223,32 @@
   })();
 
   const IMG_PATH = "images/optimised/";
+  const VIDEO_PATH = "assets/videos/";
+
+  /*
+   * RECIPE SCHEMA — to add a new recipe:
+   *
+   *   1. Drop photos under images/optimised/<id>-1.webp ... <id>-N.webp
+   *   2. (Optional) Drop video under assets/videos/<id>.mp4 (H.264, ≤ 2MB, fast-start)
+   *   3. Add a new object to the RECIPES array below with this shape:
+   *
+   *      {
+   *        id: "honey-fig",                // lower-kebab, must match filenames
+   *        name: "Honey & Fig",
+   *        teaser: "One-line tile teaser.",
+   *        imageCount: 3,                  // number of photos
+   *        prep: "10 min",
+   *        difficulty: "Easy",             // "Easy" | "More effort"
+   *        video: {                        // OPTIONAL — omit for photo-only recipes
+   *          src: VIDEO_PATH + "honey-fig.mp4",
+   *          poster: IMG_PATH + "honey-fig-1.webp"  // optional, defaults to image 1
+   *        },
+   *        ingredients: [ ... ],           // strings, or { group: "..." } for headers
+   *        method: [ ... ]                 // numbered automatically
+   *      }
+   *
+   *   4. (Optional) Add TIPS["honey-fig"] = "..." for a tip box at the bottom.
+   */
 
   const RECIPES = [
     {
@@ -1180,6 +1275,36 @@
         "Mash \u2154 of the banana in a separate bowl, then stir it into the oats with the peanut butter until combined.",
         "Cover and refrigerate overnight.",
         "When ready to serve, slice the remaining banana and place on top, adding a sprinkle of chopped nuts to taste."
+      ]
+    },
+    {
+      id: "mango-coconut",
+      name: "Mango & Coconut",
+      teaser: "Tropical, creamy, sunshine in a jar.",
+      imageCount: 4,
+      prep: "5 min",
+      difficulty: "Easy",
+      video: {
+        src: VIDEO_PATH + "mango-coconut.mp4",
+        poster: IMG_PATH + "mango-coconut-1.webp"
+      },
+      ingredients: [
+        "140ml / ½ cup coconut milk (just below the milk line)",
+        "50g / ½ cup rolled oats (one lid)",
+        "1 tbsp chia seeds",
+        "½ tsp vanilla extract",
+        "½ mango, diced",
+        "1½ tsp desiccated coconut",
+        "A pinch of salt",
+        "Toasted almonds, for topping (optional)"
+      ],
+      method: [
+        "Add 140ml coconut milk just below the milk line on your jar.",
+        "Measure and add one portion of oats (50g / ½ cup) using the lid.",
+        "Stir in the chia seeds, vanilla extract and a pinch of salt.",
+        "Add the diced mango and desiccated coconut. Stir well until fully combined.",
+        "Cover and refrigerate overnight.",
+        "Top with toasted almonds before serving, if desired."
       ]
     },
     {
@@ -1318,6 +1443,39 @@
         "Cover and refrigerate overnight.",
         "Top with fresh blueberries."
       ]
+    },
+    {
+      id: "banana-bread",
+      name: "Banana Bread",
+      teaser: "Caramelised banana, warm spice, cosy.",
+      imageCount: 4,
+      prep: "10 min",
+      difficulty: "Easy",
+      video: {
+        src: VIDEO_PATH + "banana-bread.mp4",
+        poster: IMG_PATH + "banana-bread-1.webp"
+      },
+      ingredients: [
+        "140ml / ½ cup milk of choice (just below the milk line)",
+        "50g / ½ cup rolled oats (one lid)",
+        "1 medium ripe banana",
+        "60g Greek yoghurt",
+        "1 tsp chia seeds",
+        "½ tsp ground cinnamon",
+        "½ tsp vanilla extract",
+        "1 tsp honey, or sweetener of choice",
+        "A pinch of sea salt",
+        "Olive oil, extra honey and a pinch of cinnamon, for the caramelised banana topping"
+      ],
+      method: [
+        "Add 140ml milk just below the milk line on your jar.",
+        "Measure and add one portion of oats (50g / ½ cup) using the lid.",
+        "Mash ⅔ of the banana in a separate bowl, then stir it into the oats with the Greek yoghurt.",
+        "Mix in the chia seeds, ground cinnamon, vanilla extract, honey and a pinch of sea salt.",
+        "Cover and refrigerate overnight.",
+        "When ready to serve, warm the remaining sliced banana in a small pan with a little olive oil, a pinch of cinnamon and a squeeze of honey until softened.",
+        "Spoon the caramelised banana on top."
+      ]
     }
   ];
 
@@ -1327,7 +1485,9 @@
     "choc-raspberry": "Pick a cacao you love. It does most of the heavy lifting in this one.",
     "strawberry-cheesecake": "Let the strawberries sit with the honey for a few minutes before mashing. More flavour.",
     "apple-pie": "Stew the apples the night before so breakfast is grab-and-go in the morning.",
-    "blended-berry": "Straight from the blender into your jar. Saves on washing up."
+    "blended-berry": "Straight from the blender into your jar. Saves on washing up.",
+    "banana-bread": "Pick a banana with brown spots. Natural sweetness, no extra honey needed.",
+    "mango-coconut": "Frozen mango chunks work brilliantly. They thaw beautifully overnight."
   };
 
   RECIPES.forEach(r => {
@@ -1335,17 +1495,36 @@
     for (let i = 1; i <= r.imageCount; i++) {
       r.images.push(IMG_PATH + r.id + "-" + i + ".webp");
     }
+    // Build a media list that the hero/gallery iterate over.
+    // r.media[0] is the canonical "hero on open" item — video if present, else first photo.
+    r.media = [];
+    if (r.video && r.video.src) {
+      r.media.push({
+        type: "video",
+        src: r.video.src,
+        poster: r.video.poster || r.images[0]
+      });
+    }
+    r.images.forEach(src => r.media.push({ type: "image", src }));
   });
+
+  const prefersReducedMotion = () =>
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const grid = document.getElementById("grid");
   const modal = document.getElementById("modal");
   const scrim = document.getElementById("scrim");
-  const heroImg = document.getElementById("heroImg");
+  const modalScroll = document.getElementById("modalScroll");
+  const heroMedia = document.getElementById("heroMedia");
+  const heroAudioToggle = document.getElementById("heroAudioToggle");
   const gallery = document.getElementById("gallery");
   const modalBody = document.getElementById("modalBody");
   const modalMeta = document.getElementById("modalMeta");
   const modalTitle = document.getElementById("modal-title");
   const closeBtn = document.getElementById("closeBtn");
+
+  let currentVideoEl = null;
+  let heroVisibilityIO = null;
 
   RECIPES.forEach((r, idx) => {
     const btn = document.createElement("button");
@@ -1366,14 +1545,54 @@
     grid.appendChild(btn);
   });
 
+  function teardownVideo() {
+    if (!currentVideoEl) return;
+    try {
+      currentVideoEl.pause();
+      currentVideoEl.removeAttribute("src");
+      currentVideoEl.load(); // releases the iOS decoder + cancels in-flight network
+    } catch (e) { /* ignore */ }
+    currentVideoEl = null;
+    heroAudioToggle.hidden = true;
+    heroAudioToggle.classList.remove("unmuted");
+    heroAudioToggle.setAttribute("aria-label", "Unmute video");
+  }
+
+  function renderHero(item, opts) {
+    opts = opts || {};
+    const autoplay = opts.autoplay !== false;
+    teardownVideo();
+    heroMedia.innerHTML = "";
+
+    if (item.type === "video") {
+      const v = document.createElement("video");
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.setAttribute("playsinline", "");
+      v.setAttribute("webkit-playsinline", "");
+      v.setAttribute("aria-label", "Recipe video");
+      v.preload = "metadata";
+      if (item.poster) v.poster = item.poster;
+      v.src = item.src;
+      heroMedia.appendChild(v);
+      currentVideoEl = v;
+      heroAudioToggle.hidden = false;
+      if (autoplay && !prefersReducedMotion()) {
+        v.play().catch(() => { /* autoplay blocked — poster stays; mute-toggle gesture will play */ });
+      }
+    } else {
+      const img = document.createElement("img");
+      img.src = item.src;
+      img.alt = "";
+      img.decoding = "async";
+      heroMedia.appendChild(img);
+    }
+  }
+
+  // Backwards-compat wrapper for any caller that still passes a photo URL directly
   function swapHeroImage(src) {
-    heroImg.classList.add("swap");
-    const pre = new Image();
-    pre.onload = () => {
-      heroImg.src = src;
-      requestAnimationFrame(() => heroImg.classList.remove("swap"));
-    };
-    pre.src = src;
+    renderHero({ type: "image", src });
   }
 
   let savedScrollY = 0;
@@ -1417,9 +1636,8 @@
     triggerEl = document.activeElement;
     modalTitle.textContent = r.name;
 
-    heroImg.classList.remove("swap");
-    heroImg.src = r.images[0];
-    heroImg.alt = r.name;
+    // Hero — render either the video (autoplay muted loop) or the first photo
+    renderHero(r.media[0], { autoplay: true });
 
     modalMeta.innerHTML = `
       <span class="chip"><b>Prep</b> ${r.prep}</span>
@@ -1427,18 +1645,30 @@
       <span class="chip"><b>Serves</b> 1</span>
     `;
 
-    gallery.innerHTML = r.images.map((src, i) => `
-      <button class="thumb ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Photo ${i + 1}">
-        <img src="${src}" alt="" loading="lazy" decoding="async" />
-      </button>
-    `).join("");
+    // Gallery — iterate r.media so the video (if any) gets its own thumb with play icon
+    gallery.innerHTML = r.media.map((m, i) => {
+      if (m.type === "video") {
+        return `
+          <button class="thumb video-thumb ${i === 0 ? 'active' : ''}" data-index="${i}" type="button" aria-label="Play recipe video">
+            <img src="${m.poster}" alt="" loading="lazy" decoding="async" />
+            <svg class="play-icon" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+              <polygon points="6,4 20,12 6,20"/>
+            </svg>
+          </button>`;
+      }
+      const photoIndex = r.video && r.video.src ? i : i + 1; // human-friendly numbering
+      return `
+        <button class="thumb ${i === 0 ? 'active' : ''}" data-index="${i}" type="button" aria-label="Photo ${photoIndex}">
+          <img src="${m.src}" alt="" loading="lazy" decoding="async" />
+        </button>`;
+    }).join("");
 
     gallery.querySelectorAll(".thumb").forEach(btn => {
       btn.addEventListener("click", () => {
         const i = parseInt(btn.dataset.index, 10);
         gallery.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
         btn.classList.add("active");
-        swapHeroImage(r.images[i]);
+        renderHero(r.media[i], { autoplay: true });
       });
     });
 
@@ -1463,8 +1693,24 @@
       </div>
       ${tip ? `<div class="tip"><b>Tip</b>${tip}</div>` : ""}
     `;
-    modalBody.scrollTop = 0;
+    modalScroll.scrollTop = 0;
     gallery.scrollLeft = 0;
+
+    // Auto-pause video when scrolled out of view (battery-friendly), resume when back
+    if ("IntersectionObserver" in window) {
+      if (heroVisibilityIO) heroVisibilityIO.disconnect();
+      heroVisibilityIO = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!currentVideoEl) return;
+          if (entry.intersectionRatio < 0.2) {
+            if (!currentVideoEl.paused) currentVideoEl.pause();
+          } else if (!prefersReducedMotion() && currentVideoEl.paused && currentVideoEl.muted) {
+            currentVideoEl.play().catch(() => {});
+          }
+        });
+      }, { root: modalScroll, threshold: [0, 0.2, 0.6] });
+      heroVisibilityIO.observe(heroMedia);
+    }
 
     requestAnimationFrame(() => {
       lockBodyScroll();
@@ -1475,6 +1721,11 @@
   }
 
   function closeRecipe() {
+    teardownVideo();
+    if (heroVisibilityIO) {
+      heroVisibilityIO.disconnect();
+      heroVisibilityIO = null;
+    }
     modal.classList.remove("open");
     scrim.classList.remove("open");
     unlockBodyScroll();
@@ -1497,6 +1748,16 @@
       }, 500);
     }
   }
+
+  // Mute / unmute toggle for the hero video
+  heroAudioToggle.addEventListener("click", () => {
+    if (!currentVideoEl) return;
+    currentVideoEl.muted = !currentVideoEl.muted;
+    heroAudioToggle.classList.toggle("unmuted", !currentVideoEl.muted);
+    heroAudioToggle.setAttribute("aria-label", currentVideoEl.muted ? "Unmute video" : "Mute video");
+    // First user gesture also unblocks autoplay if it was previously blocked
+    if (currentVideoEl.paused) currentVideoEl.play().catch(() => {});
+  });
 
   closeBtn.addEventListener("click", closeRecipe);
   scrim.addEventListener("click", closeRecipe);
