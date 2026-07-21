@@ -1,0 +1,6 @@
+# recipes.oatologystore.com
+# All crawlers welcome, including AI answer engines (ChatGPT, Perplexity, Claude, Google AI).
+User-agent: *
+Allow: /
+
+Sitemap: https://recipes.oatologystore.com/sitemap.xml
