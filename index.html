@@ -528,6 +528,37 @@
     .survey-btn:hover { background: var(--blueberry-deep); }
   }
 
+  .guides {
+    margin-top: 14px;
+    background: var(--oatmeal-light);
+    border-radius: 18px;
+    padding: 18px 20px 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 83, 99, 0.06);
+  }
+  .guides-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blueberry);
+    margin: 0 0 10px;
+    line-height: 1.45;
+    letter-spacing: 0.005em;
+  }
+  .guides ul { list-style: none; margin: 0; padding: 0; }
+  .guides li { margin: 0; }
+  .guides li + li { border-top: 1px solid rgba(0, 83, 99, 0.08); }
+  .guides a {
+    display: block;
+    padding: 9px 4px;
+    color: var(--blueberry);
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  @media (hover: hover) {
+    .guides a:hover { color: var(--blueberry-deep); text-decoration: underline; }
+  }
+
   footer {
     margin-top: 28px;
     display: flex;
@@ -1154,6 +1185,15 @@
   </aside>
 
   <section class="grid" id="grid" aria-label="Recipe cards"></section>
+
+  <section class="guides" aria-label="Overnight oats guides">
+    <p class="guides-title">Guides from the OATOLOGY Kitchen</p>
+    <ul>
+      <li><a href="overnight-oats-ratio/">The Overnight Oats Ratio, in Grams</a></li>
+      <li><a href="how-long-do-overnight-oats-last/">How Long Do Overnight Oats Last?</a></li>
+      <li><a href="best-jars-for-overnight-oats-uk/">The Best Jars for Overnight Oats (UK)</a></li>
+    </ul>
+  </section>
 
   <section class="survey" aria-label="Customer survey">
     <p class="survey-title">Got 2 minutes? Help us make OATOLOGY even better.</p>
