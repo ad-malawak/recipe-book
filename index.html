@@ -51,6 +51,22 @@
       "name": "OATOLOGY Recipes",
       "inLanguage": "en-GB",
       "publisher": { "@id": "https://oatologystore.com/#organization" }
+    },
+    {
+      "@type": "ItemList",
+      "name": "OATOLOGY Overnight Oats Recipes",
+      "itemListOrder": "https://schema.org/ItemListUnordered",
+      "numberOfItems": 8,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Peanut Butter & Banana Overnight Oats", "url": "https://recipes.oatologystore.com/peanut-butter-banana-overnight-oats/" },
+        { "@type": "ListItem", "position": 2, "name": "Mango & Coconut Overnight Oats", "url": "https://recipes.oatologystore.com/mango-coconut-overnight-oats/" },
+        { "@type": "ListItem", "position": 3, "name": "Blueberry & Lemon Overnight Oats", "url": "https://recipes.oatologystore.com/blueberry-lemon-overnight-oats/" },
+        { "@type": "ListItem", "position": 4, "name": "Chocolate & Raspberry Overnight Oats", "url": "https://recipes.oatologystore.com/chocolate-raspberry-overnight-oats/" },
+        { "@type": "ListItem", "position": 5, "name": "Strawberry Cheesecake Overnight Oats", "url": "https://recipes.oatologystore.com/strawberry-cheesecake-overnight-oats/" },
+        { "@type": "ListItem", "position": 6, "name": "Apple Pie Overnight Oats", "url": "https://recipes.oatologystore.com/apple-pie-overnight-oats/" },
+        { "@type": "ListItem", "position": 7, "name": "Blended Berry Overnight Oats", "url": "https://recipes.oatologystore.com/blended-berry-overnight-oats/" },
+        { "@type": "ListItem", "position": 8, "name": "Banana Bread Overnight Oats", "url": "https://recipes.oatologystore.com/banana-bread-overnight-oats/" }
+      ]
     }
   ]
 }
@@ -411,6 +427,7 @@
     padding: 0;
     font-family: inherit;
     color: inherit;
+    text-decoration: none;
     transition: transform 180ms ease, box-shadow 180ms ease;
     touch-action: manipulation;
     -webkit-appearance: none;
@@ -1626,9 +1643,25 @@
   let currentVideoEl = null;
   let heroVisibilityIO = null;
 
+  // Maps each recipe to its own SEO page URL. Cards are real links (crawlable,
+  // open-in-new-tab works) but a click opens the in-page modal via preventDefault,
+  // so the QR / post-purchase experience is unchanged.
+  const RECIPE_SLUG = {
+    "peanut-banana": "peanut-butter-banana-overnight-oats",
+    "mango-coconut": "mango-coconut-overnight-oats",
+    "blueberry-lemon": "blueberry-lemon-overnight-oats",
+    "choc-raspberry": "chocolate-raspberry-overnight-oats",
+    "strawberry-cheesecake": "strawberry-cheesecake-overnight-oats",
+    "apple-pie": "apple-pie-overnight-oats",
+    "blended-berry": "blended-berry-overnight-oats",
+    "banana-bread": "banana-bread-overnight-oats"
+  };
+
   RECIPES.forEach((r, idx) => {
-    const btn = document.createElement("button");
+    const btn = document.createElement("a");
     btn.className = "card";
+    const slug = RECIPE_SLUG[r.id];
+    if (slug) btn.href = "/" + slug + "/";
     btn.setAttribute("aria-label", r.name + " recipe");
     btn.dataset.id = r.id;
     const eager = idx < 4 ? 'eager' : 'lazy';
@@ -1641,7 +1674,12 @@
         <p class="teaser">${r.teaser}</p>
       </div>
     `;
-    btn.addEventListener("click", () => openRecipe(r.id));
+    btn.addEventListener("click", (e) => {
+      // Let modified clicks (new tab, etc.) follow the link to the recipe page.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+      e.preventDefault();
+      openRecipe(r.id);
+    });
     grid.appendChild(btn);
   });
 
