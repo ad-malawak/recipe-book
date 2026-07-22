@@ -1184,7 +1184,80 @@
     </div>
   </aside>
 
-  <section class="grid" id="grid" aria-label="Recipe cards"></section>
+  <section class="grid" id="grid" aria-label="Recipe cards">
+    <a class="card" href="/peanut-butter-banana-overnight-oats/" aria-label="Peanut Butter and Banana recipe" data-id="peanut-banana">
+      <div class="tile">
+        <img src="images/optimised/peanut-banana-thumb.webp" alt="Peanut Butter &amp; Banana" width="400" height="400" loading="eager" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">Peanut Butter &amp; Banana</p>
+        <p class="teaser">Creamy, nutty, a forever favourite.</p>
+      </div>
+    </a>
+    <a class="card" href="/mango-coconut-overnight-oats/" aria-label="Mango and Coconut recipe" data-id="mango-coconut">
+      <div class="tile">
+        <img src="images/optimised/mango-coconut-thumb.webp" alt="Mango &amp; Coconut" width="400" height="400" loading="eager" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">Mango &amp; Coconut</p>
+        <p class="teaser">Tropical, creamy, sunshine in a jar.</p>
+      </div>
+    </a>
+    <a class="card" href="/blueberry-lemon-overnight-oats/" aria-label="Blueberry and Lemon recipe" data-id="blueberry-lemon">
+      <div class="tile">
+        <img src="images/optimised/blueberry-lemon-thumb.webp" alt="Blueberry &amp; Lemon" width="400" height="400" loading="eager" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">Blueberry &amp; Lemon</p>
+        <p class="teaser">Zesty, fresh, wake-up bright.</p>
+      </div>
+    </a>
+    <a class="card" href="/chocolate-raspberry-overnight-oats/" aria-label="Chocolate and Raspberry recipe" data-id="choc-raspberry">
+      <div class="tile">
+        <img src="images/optimised/choc-raspberry-thumb.webp" alt="Chocolate &amp; Raspberry" width="400" height="400" loading="eager" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">Chocolate &amp; Raspberry</p>
+        <p class="teaser">Rich, chocolatey, fruit-kissed.</p>
+      </div>
+    </a>
+    <a class="card" href="/strawberry-cheesecake-overnight-oats/" aria-label="Strawberry Cheesecake recipe" data-id="strawberry-cheesecake">
+      <div class="tile">
+        <img src="images/optimised/strawberry-cheesecake-thumb.webp" alt="Strawberry Cheesecake" width="400" height="400" loading="lazy" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">Strawberry Cheesecake</p>
+        <p class="teaser">Indulgent, smooth, pudding for breakfast.</p>
+      </div>
+    </a>
+    <a class="card" href="/apple-pie-overnight-oats/" aria-label="Apple Pie recipe" data-id="apple-pie">
+      <div class="tile">
+        <img src="images/optimised/apple-pie-thumb.webp" alt="Apple Pie" width="400" height="400" loading="lazy" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">Apple Pie</p>
+        <p class="teaser">Warm spice, stewed apple, cosy.</p>
+      </div>
+    </a>
+    <a class="card" href="/blended-berry-overnight-oats/" aria-label="Blended Berry recipe" data-id="blended-berry">
+      <div class="tile">
+        <img src="images/optimised/blended-berry-thumb.webp" alt="Blended Berry" width="400" height="400" loading="lazy" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">Blended Berry</p>
+        <p class="teaser">Smooth, vibrant, berry-forward.</p>
+      </div>
+    </a>
+    <a class="card" href="/banana-bread-overnight-oats/" aria-label="Banana Bread recipe" data-id="banana-bread">
+      <div class="tile">
+        <img src="images/optimised/banana-bread-thumb.webp" alt="Banana Bread" width="400" height="400" loading="lazy" decoding="async" />
+      </div>
+      <div class="label">
+        <p class="name">Banana Bread</p>
+        <p class="teaser">Caramelised banana, warm spice, cosy.</p>
+      </div>
+    </a>
+  </section>
 
   <section class="guides" aria-label="Overnight oats guides">
     <p class="guides-title">Guides from the OATOLOGY Kitchen</p>
@@ -1684,44 +1757,16 @@
   let currentVideoEl = null;
   let heroVisibilityIO = null;
 
-  // Maps each recipe to its own SEO page URL. Cards are real links (crawlable,
-  // open-in-new-tab works) but a click opens the in-page modal via preventDefault,
-  // so the QR / post-purchase experience is unchanged.
-  const RECIPE_SLUG = {
-    "peanut-banana": "peanut-butter-banana-overnight-oats",
-    "mango-coconut": "mango-coconut-overnight-oats",
-    "blueberry-lemon": "blueberry-lemon-overnight-oats",
-    "choc-raspberry": "chocolate-raspberry-overnight-oats",
-    "strawberry-cheesecake": "strawberry-cheesecake-overnight-oats",
-    "apple-pie": "apple-pie-overnight-oats",
-    "blended-berry": "blended-berry-overnight-oats",
-    "banana-bread": "banana-bread-overnight-oats"
-  };
 
-  RECIPES.forEach((r, idx) => {
-    const btn = document.createElement("a");
-    btn.className = "card";
-    const slug = RECIPE_SLUG[r.id];
-    if (slug) btn.href = "/" + slug + "/";
-    btn.setAttribute("aria-label", r.name + " recipe");
-    btn.dataset.id = r.id;
-    const eager = idx < 4 ? 'eager' : 'lazy';
-    btn.innerHTML = `
-      <div class="tile">
-        <img src="${r.images[0]}" alt="${r.name}" loading="${eager}" decoding="async" />
-      </div>
-      <div class="label">
-        <p class="name">${r.name}</p>
-        <p class="teaser">${r.teaser}</p>
-      </div>
-    `;
+  // Cards are static HTML in the page source (crawlable by search + AI engines).
+  // Bind the modal to the existing anchors: a plain click opens the in-page modal
+  // (QR / post-purchase experience unchanged); modified clicks follow the link.
+  grid.querySelectorAll(".card").forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      // Let modified clicks (new tab, etc.) follow the link to the recipe page.
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
       e.preventDefault();
-      openRecipe(r.id);
+      openRecipe(btn.dataset.id);
     });
-    grid.appendChild(btn);
   });
 
   function teardownVideo() {
