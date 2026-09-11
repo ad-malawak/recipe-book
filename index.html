@@ -53,7 +53,28 @@
       "url": "https://recipes.oatologystore.com/",
       "name": "OATOLOGY Recipes",
       "inLanguage": "en-GB",
-      "publisher": { "@id": "https://oatologystore.com/#organization" }
+      "publisher": {
+        "@id": "https://oatologystore.com/#organization"
+      }
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": "https://recipes.oatologystore.com/#webpage",
+      "url": "https://recipes.oatologystore.com/",
+      "name": "Easy Overnight Oats Recipes | OATOLOGY",
+      "description": "Easy overnight oats recipes made in the OATOLOGY jar, with measurements in grams and ml. Peanut butter, chocolate, mango and more, ready by morning.",
+      "inLanguage": "en-GB",
+      "isPartOf": {
+        "@id": "https://recipes.oatologystore.com/#website"
+      },
+      "about": {
+        "@id": "https://oatologystore.com/#organization"
+      },
+      "datePublished": "2026-07-21",
+      "dateModified": "2026-09-11",
+      "mainEntity": {
+        "@id": "https://recipes.oatologystore.com/#recipes"
+      }
     },
     {
       "@type": "ItemList",
@@ -61,14 +82,85 @@
       "itemListOrder": "https://schema.org/ItemListUnordered",
       "numberOfItems": 8,
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Peanut Butter & Banana Overnight Oats", "url": "https://recipes.oatologystore.com/peanut-butter-banana-overnight-oats/" },
-        { "@type": "ListItem", "position": 2, "name": "Mango & Coconut Overnight Oats", "url": "https://recipes.oatologystore.com/mango-coconut-overnight-oats/" },
-        { "@type": "ListItem", "position": 3, "name": "Blueberry & Lemon Overnight Oats", "url": "https://recipes.oatologystore.com/blueberry-lemon-overnight-oats/" },
-        { "@type": "ListItem", "position": 4, "name": "Chocolate & Raspberry Overnight Oats", "url": "https://recipes.oatologystore.com/chocolate-raspberry-overnight-oats/" },
-        { "@type": "ListItem", "position": 5, "name": "Strawberry Cheesecake Overnight Oats", "url": "https://recipes.oatologystore.com/strawberry-cheesecake-overnight-oats/" },
-        { "@type": "ListItem", "position": 6, "name": "Apple Pie Overnight Oats", "url": "https://recipes.oatologystore.com/apple-pie-overnight-oats/" },
-        { "@type": "ListItem", "position": 7, "name": "Blended Berry Overnight Oats", "url": "https://recipes.oatologystore.com/blended-berry-overnight-oats/" },
-        { "@type": "ListItem", "position": 8, "name": "Banana Bread Overnight Oats", "url": "https://recipes.oatologystore.com/banana-bread-overnight-oats/" }
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Peanut Butter & Banana Overnight Oats",
+          "url": "https://recipes.oatologystore.com/peanut-butter-banana-overnight-oats/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Mango & Coconut Overnight Oats",
+          "url": "https://recipes.oatologystore.com/mango-coconut-overnight-oats/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Blueberry & Lemon Overnight Oats",
+          "url": "https://recipes.oatologystore.com/blueberry-lemon-overnight-oats/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Chocolate & Raspberry Overnight Oats",
+          "url": "https://recipes.oatologystore.com/chocolate-raspberry-overnight-oats/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Strawberry Cheesecake Overnight Oats",
+          "url": "https://recipes.oatologystore.com/strawberry-cheesecake-overnight-oats/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Apple Pie Overnight Oats",
+          "url": "https://recipes.oatologystore.com/apple-pie-overnight-oats/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "name": "Blended Berry Overnight Oats",
+          "url": "https://recipes.oatologystore.com/blended-berry-overnight-oats/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 8,
+          "name": "Banana Bread Overnight Oats",
+          "url": "https://recipes.oatologystore.com/banana-bread-overnight-oats/"
+        }
+      ],
+      "@id": "https://recipes.oatologystore.com/#recipes"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://recipes.oatologystore.com/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the overnight oats ratio?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "50g rolled oats to 150ml milk, plus 1 tbsp chia seeds. Without chia, about 130ml. The lid measures the oats, the jar measures the milk."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long do overnight oats last?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "3 to 5 days in a sealed jar in the fridge at 5°C or below. With fresh fruit stirred through, eat within 3 days."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need an OATOLOGY jar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Any sealed glass jar with 350 to 500ml of room works, with a scale and a jug. Ours does the measuring for you."
+          }
+        }
       ]
     }
   ]
@@ -1140,7 +1232,33 @@
       border-radius: 28px 28px 0 0;
     }
   }
+
+  /* Search landing layer: shown without Tally/QR params, hidden for scanning customers */
+  html.qr .organic-only { display: none; }
+  html:not(.qr) .qr-only { display: none; }
+  .facts { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .fact { background: var(--oatmeal-light); border-radius: 18px; padding: 14px 8px 12px; text-align: center; box-shadow: 0 2px 8px rgba(0, 83, 99, 0.06); }
+  .fact svg, .answer svg { width: 22px; height: 22px; stroke: var(--blueberry); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; display: block; }
+  .fact svg { margin: 0 auto 7px; }
+  .fact p { margin: 0; font-size: 12px; font-weight: 700; color: var(--blueberry); line-height: 1.3; }
+  .section-title { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 900; color: var(--blueberry); opacity: 0.85; text-align: center; margin: 28px 0 12px; }
+  .glance-list { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 4px 16px; }
+  .glance-row { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: center; padding: 11px 0; border-bottom: 1px solid rgba(0, 83, 99, 0.08); text-decoration: none; color: inherit; }
+  .glance-row:last-child { border-bottom: 0; }
+  .glance-row img { width: 52px; height: 52px; border-radius: 14px; object-fit: cover; display: block; }
+  .glance-row .gname { display: block; font-size: 14px; font-weight: 1000; color: var(--blueberry); line-height: 1.2; margin-bottom: 3px; letter-spacing: -0.005em; }
+  .glance-row .gline { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); line-height: 1.3; }
+  .answers { display: grid; gap: 12px; }
+  .answers .section-title { margin-bottom: 0; }
+  .answer { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px 15px; }
+  .answer svg { margin-bottom: 8px; }
+  .answer h3 { font-size: 15px; font-weight: 1000; color: var(--blueberry); line-height: 1.25; margin: 0 0 6px; }
+  .answer p { font-size: 13.5px; font-weight: 500; color: var(--ink); line-height: 1.5; margin: 0 0 9px; }
+  .answer a { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; color: var(--blueberry); text-decoration: none; }
+  .kitchen-line { margin: 4px 0 0; text-align: center; font-size: 11.5px; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
+  @media (hover: hover) { .glance-row:hover .gname, .answer a:hover { color: var(--blueberry-deep); } .answer a:hover { text-decoration: underline; } }
 </style>
+<script>(function(){try{var p=new URLSearchParams(location.search);if(p.has("from")||p.has("name")||p.has("country")){document.documentElement.classList.add("qr");}}catch(e){}})();</script>
 </head>
 <body>
 
@@ -1152,9 +1270,10 @@
 
   <header>
     <img class="logo" src="assets/logo/OATOLOGY-Logo-Blueberry-Cropped.png" alt="OATOLOGY" />
-    <h1>Your Recipes</h1>
-    <p class="sub">Eight overnight oats, one jar. Tap a recipe to get started.</p>
+    <h1 id="pageTitle">Easy Overnight Oats Recipes</h1>
+    <p class="sub" id="pageSub">Eight overnight oats, measured in grams and ml, made in one jar.</p>
   </header>
+  <script>if(document.documentElement.classList.contains("qr")){document.getElementById("pageTitle").textContent="Your Recipes";document.getElementById("pageSub").textContent="Eight overnight oats, one jar. Tap a recipe to get started.";}</script>
 
   <aside class="welcome" id="welcome" role="status" aria-label="Prize draw confirmation">
     <div class="welcome-confetti" aria-hidden="true">
@@ -1261,7 +1380,76 @@
     </a>
   </section>
 
-  <section class="guides" aria-label="Overnight oats guides">
+  <div class="organic-only">
+    <section class="facts" aria-label="What to expect">
+      <div class="fact"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="3"/><path d="M8 12h8"/></svg><p>50g oats<br />150ml milk</p></div>
+      <div class="fact"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 2"/></svg><p>5 to 15 min<br />to prepare</p></div>
+      <div class="fact"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M6 10h12M9 6.5v1.5M9 13v3"/></svg><p>Keeps 3 days<br />in the fridge</p></div>
+    </section>
+
+    <section class="glance" aria-labelledby="glance-title">
+      <h2 class="section-title" id="glance-title">Which one first?</h2>
+      <div class="glance-list">
+        <a class="glance-row" href="/peanut-butter-banana-overnight-oats/" data-id="peanut-banana" aria-label="Peanut Butter and Banana Overnight Oats">
+          <img src="images/optimised/peanut-banana-thumb.webp" alt="" width="52" height="52" loading="lazy" decoding="async" />
+          <span><span class="gname">Peanut Butter &amp; Banana</span><span class="gline">10 min &middot; Nutty, creamy, filling. Start here.</span></span>
+        </a>
+        <a class="glance-row" href="/mango-coconut-overnight-oats/" data-id="mango-coconut" aria-label="Mango and Coconut Overnight Oats">
+          <img src="images/optimised/mango-coconut-thumb.webp" alt="" width="52" height="52" loading="lazy" decoding="async" />
+          <span><span class="gname">Mango &amp; Coconut</span><span class="gline">5 min &middot; Coconut milk and fresh mango. Naturally vegan.</span></span>
+        </a>
+        <a class="glance-row" href="/blueberry-lemon-overnight-oats/" data-id="blueberry-lemon" aria-label="Blueberry and Lemon Overnight Oats">
+          <img src="images/optimised/blueberry-lemon-thumb.webp" alt="" width="52" height="52" loading="lazy" decoding="async" />
+          <span><span class="gname">Blueberry &amp; Lemon</span><span class="gline">10 min &middot; Greek yoghurt and lemon zest. Sharp and fresh.</span></span>
+        </a>
+        <a class="glance-row" href="/chocolate-raspberry-overnight-oats/" data-id="choc-raspberry" aria-label="Chocolate and Raspberry Overnight Oats">
+          <img src="images/optimised/choc-raspberry-thumb.webp" alt="" width="52" height="52" loading="lazy" decoding="async" />
+          <span><span class="gname">Chocolate &amp; Raspberry</span><span class="gline">5 min &middot; Cacao and raspberries. Pudding, technically oats.</span></span>
+        </a>
+        <a class="glance-row" href="/strawberry-cheesecake-overnight-oats/" data-id="strawberry-cheesecake" aria-label="Strawberry Cheesecake Overnight Oats">
+          <img src="images/optimised/strawberry-cheesecake-thumb.webp" alt="" width="52" height="52" loading="lazy" decoding="async" />
+          <span><span class="gname">Strawberry Cheesecake</span><span class="gline">10 min &middot; Cream cheese base, crushed biscuit on top.</span></span>
+        </a>
+        <a class="glance-row" href="/apple-pie-overnight-oats/" data-id="apple-pie" aria-label="Apple Pie Overnight Oats">
+          <img src="images/optimised/apple-pie-thumb.webp" alt="" width="52" height="52" loading="lazy" decoding="async" />
+          <span><span class="gname">Apple Pie</span><span class="gline">15 min &middot; Stewed cinnamon apple, layered. A little more effort.</span></span>
+        </a>
+        <a class="glance-row" href="/blended-berry-overnight-oats/" data-id="blended-berry" aria-label="Blended Berry Overnight Oats">
+          <img src="images/optimised/blended-berry-thumb.webp" alt="" width="52" height="52" loading="lazy" decoding="async" />
+          <span><span class="gname">Blended Berry</span><span class="gline">10 min &middot; Blended smooth with berries. No lumps.</span></span>
+        </a>
+        <a class="glance-row" href="/banana-bread-overnight-oats/" data-id="banana-bread" aria-label="Banana Bread Overnight Oats">
+          <img src="images/optimised/banana-bread-thumb.webp" alt="" width="52" height="52" loading="lazy" decoding="async" />
+          <span><span class="gname">Banana Bread</span><span class="gline">10 min &middot; Ripe banana, cinnamon, caramelised banana on top.</span></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="answers" aria-labelledby="answers-title">
+      <h2 class="section-title" id="answers-title">Quick answers</h2>
+      <article class="answer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="3"/><path d="M8 12h8"/></svg>
+        <h3>What is the overnight oats ratio?</h3>
+        <p>50g rolled oats to 150ml milk, plus 1 tbsp chia seeds. Without chia, about 130ml. The lid measures the oats, the jar measures the milk.</p>
+        <a href="overnight-oats-ratio/">Ratio guide <span aria-hidden="true">&rarr;</span></a>
+      </article>
+      <article class="answer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M6 10h12M9 6.5v1.5M9 13v3"/></svg>
+        <h3>How long do overnight oats last?</h3>
+        <p>3 to 5 days in a sealed jar in the fridge at 5&deg;C or below. With fresh fruit stirred through, eat within 3 days.</p>
+        <a href="how-long-do-overnight-oats-last/">Storage guide <span aria-hidden="true">&rarr;</span></a>
+      </article>
+      <article class="answer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="8" height="14" rx="2.5"/><rect x="13" y="6" width="8" height="14" rx="2.5"/><path d="M5 12h4M15 12h4"/></svg>
+        <h3>Do I need an OATOLOGY jar?</h3>
+        <p>No. Any sealed glass jar with 350 to 500ml of room works, with a scale and a jug. Ours does the measuring for you.</p>
+        <a href="best-jars-for-overnight-oats-uk/">Jar comparison <span aria-hidden="true">&rarr;</span></a>
+      </article>
+      <p class="kitchen-line">The OATOLOGY Kitchen &middot; Updated 11 September 2026</p>
+    </section>
+  </div>
+
+  <section class="guides qr-only" aria-label="Overnight oats guides">
     <p class="guides-title">Guides from the OATOLOGY Kitchen</p>
     <ul>
       <li><a href="overnight-oats-ratio/">The Overnight Oats Ratio, in Grams</a></li>
@@ -1768,6 +1956,13 @@
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
       e.preventDefault();
       openRecipe(btn.dataset.id);
+    });
+  });
+  document.querySelectorAll(".glance-row").forEach((row) => {
+    row.addEventListener("click", (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+      e.preventDefault();
+      openRecipe(row.dataset.id);
     });
   });
 
